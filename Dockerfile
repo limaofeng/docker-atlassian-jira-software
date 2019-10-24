@@ -1,10 +1,12 @@
-FROM cptactionhank/atlassian-jira-software:8.0.2
+FROM cptactionhank/atlassian-jira-software
 
 USER root
 
-RUN rm -rf /opt/atlassian/jira/atlassian-jira/WEB-INF/lib/atlassian-extras-3.2.jar
+# 将代理破解包加入容器
+COPY ./atlassian-agent.jar /opt/atlassian/jira/atlassian-agent.jar
 
-COPY ./atlassian-extras-3.2.jar /opt/atlassian/jira/atlassian-jira/WEB-INF/lib/atlassian-extras-3.2.jar
+# 设置启动加载代理包
+RUN echo 'export CATALINA_OPTS="-javaagent:/opt/atlassian/jira/atlassian-agent.jar ${CATALINA_OPTS}"' >> /opt/atlassian/jira/bin/setenv.sh
 
 # Use the default unprivileged account. This could be considered bad practice
 # on systems where multiple processes end up being executed by 'daemon' but
